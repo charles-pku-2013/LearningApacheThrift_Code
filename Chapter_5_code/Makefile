@@ -10,4 +10,4 @@ client:
 	c++ -o $@.bin MyFirstClient.cpp $(COMM_SRC) -I./gen-cpp -lthrift -std=c++11 -g
 
 clean:
-	rm -f *.bin
+	rm -rf *.bin *.bin.*

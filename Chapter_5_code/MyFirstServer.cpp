@@ -30,6 +30,7 @@ class MyFirstServiceHandler : virtual public MyFirstServiceIf {
 
   int get_log_size(const std::string& filename) {
     // implementation of get_log_size function goes here
+    return 0;
   }
 
 };

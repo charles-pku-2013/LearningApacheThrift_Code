@@ -26,7 +26,8 @@ int main(int argc, char **argv) {
 
     client.log("logfile.log");
 
-    cout << client.multiply(6,7) << endl;
+    int result = client.multiply(6,7);
+    cout << result << endl;
     transport->close();
 
     return 0;
