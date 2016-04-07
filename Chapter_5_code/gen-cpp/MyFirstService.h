@@ -9,6 +9,7 @@
 
 #include <thrift/TDispatchProcessor.h>
 #include <thrift/async/TConcurrentClientSyncInfo.h>
+#include <glog/logging.h>
 #include "myfirst_types.h"
 
 namespace myfirst {

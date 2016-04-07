@@ -3,6 +3,7 @@
 #include <thrift/concurrency/PlatformThreadFactory.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TThreadPoolServer.h>
+#include <thrift/server/TNonblockingServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
 #include <thrift/processor/TMultiplexedProcessor.h>
@@ -28,14 +29,16 @@ public:
     }
 
     void log(const std::string& filename) {
-        // implementation of log function goes here
+        LOG(INFO) << "Server thread " << boost::this_thread::get_id() 
+                << " doing log.";
+        boost::this_thread::sleep_for(boost::chrono::seconds(5));
     }
 
     int multiply(const int number1, const int number2) 
     {
         LOG(INFO) << "Server thread " << boost::this_thread::get_id() 
                 << " doing multiply " << number1 << " * " << number2;
-        boost::this_thread::sleep_for(boost::chrono::seconds(5));
+        boost::this_thread::sleep_for(boost::chrono::seconds(3));
         return (number1 * number2);
     }
 
@@ -60,12 +63,12 @@ int main(int argc, char **argv)
         shared_ptr<TMultiplexedProcessor> mprocessor(new TMultiplexedProcessor);
         mprocessor->registerProcessor("Service1", processor);
 
-        shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
-        shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
+        // shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
+        // shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
         shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
         // TODO n_cpu
-        const int workerCount = 8;
+        const int workerCount = 4;
 
         // tutorial/cpp/CppServer.cpp
         boost::shared_ptr<ThreadManager> threadManager =
@@ -76,8 +79,10 @@ int main(int argc, char **argv)
 
         cout << "Starting server..." << endl;
         // This server allows "workerCount" connection at a time, and reuses threads
-        TThreadPoolServer server(mprocessor, serverTransport, 
-                transportFactory, protocolFactory, threadManager);
+        // TThreadPoolServer server(mprocessor, serverTransport, 
+                // transportFactory, protocolFactory, threadManager);
+        TNonblockingServer server(mprocessor, protocolFactory, 
+                    port, threadManager);
         server.serve();
         cout << "Done!" << endl;
 
