@@ -1,3 +1,6 @@
+/*
+ * To run: GLOG_logtostderr=1 ./server.bin
+ */
 #include "MyFirstService.h"
 #include <thrift/concurrency/ThreadManager.h>
 #include <thrift/concurrency/PlatformThreadFactory.h>
@@ -65,7 +68,7 @@ int main(int argc, char **argv)
         shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
         // TODO n_cpu
-        const int workerCount = 8;
+        const int workerCount = 3;
 
         // tutorial/cpp/CppServer.cpp
         boost::shared_ptr<ThreadManager> threadManager =

@@ -1,6 +1,8 @@
+/*
+ * To run: GLOG_logtostderr=1 ./client.bin
+ */
 #include <iostream>
 
-// MyFirstService header file
 #include "gen-cpp/MyFirstService.h"
 #include <ctime>
 #include <functional>
@@ -25,7 +27,7 @@ using namespace myfirst;
  * I0406 17:10:10.696091  4647 MyFirstServer.cpp:35] Server thread 7fe2057ba700 doing multiply 4 * 18
  */
 static
-void test1( MyFirstServiceClient &client )
+void test1( MyFirstServiceIf &client )
 {
     int n1 = rand() % 30;
     int n2 = rand() % 30;
@@ -44,8 +46,6 @@ void test2( const boost::shared_ptr<TProtocol> &_protocol )
     int n2 = rand() % 30;
 
     try {
-        // 服务器端要用 TMultiplexedProcessor
-        // 但还是用一个线程处理同一连接的不同请求。
         boost::shared_ptr<TProtocol> protocol(new TMultiplexedProtocol(_protocol, "Service1"));
         MyFirstServiceClient client(protocol);
         LOG(INFO) << "Thread " << boost::this_thread::get_id() << " making request: " << n1 << " * " << n2;
@@ -64,20 +64,23 @@ int main(int argc, char **argv)
 
         boost::shared_ptr<TSocket> socket(new TSocket("localhost", 8080));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
-        boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+        boost::shared_ptr<TProtocol> _protocol(new TBinaryProtocol(transport));
+        boost::shared_ptr<TProtocol> protocol(new TMultiplexedProtocol(_protocol, "Service1"));
 
-        MyFirstServiceClient client(protocol);
+        MyFirstServiceConcurrentClient client(protocol);
 
         transport->open();
 
         srand( time(0) );
         boost::thread_group thrgroup;
         for( uint32_t i = 0; i < 1; ++i )
-            thrgroup.create_thread( std::bind(test2, protocol) );
-            // thrgroup.create_thread( std::bind(test1, std::ref(client)) );
+            thrgroup.create_thread( std::bind(test1, std::ref(client)) );
+            // thrgroup.create_thread( std::bind(test2, protocol) );
         thrgroup.join_all();
         cout << "Test finished!" << endl;
 
+        cout << "Press Enter to terminate the client..." << endl;
+        getchar();
         transport->close();
 
     } catch ( const exception &ex ) {
