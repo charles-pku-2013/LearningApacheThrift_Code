@@ -1,4 +1,6 @@
 *.swp
 *.bin
+*.bin.*
+*.zip
 *.DS_Store
 tags

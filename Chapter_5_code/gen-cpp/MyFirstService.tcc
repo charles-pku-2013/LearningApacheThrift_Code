@@ -5,6 +5,7 @@
  *  @generated
  */
 #include "MyFirstService.h"
+#include <boost/thread.hpp>
 #ifndef MyFirstService_TCC
 #define MyFirstService_TCC
 
@@ -624,7 +625,7 @@ int MyFirstServiceClientT<Protocol_>::recv_get_log_size()
 
 template <class Protocol_>
 bool MyFirstServiceProcessorT<Protocol_>::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
-  LOG(INFO) << "Server dispatching call: " << fname << " seqid = " << seqid;
+  LOG(INFO) << "Server thread " << boost::this_thread::get_id() << " dispatching call: " << fname << " seqid = " << seqid;
   typename ProcessMap::iterator pfn;
   pfn = processMap_.find(fname);
   if (pfn == processMap_.end()) {
@@ -645,7 +646,7 @@ bool MyFirstServiceProcessorT<Protocol_>::dispatchCall(::apache::thrift::protoco
 
 template <class Protocol_>
 bool MyFirstServiceProcessorT<Protocol_>::dispatchCallTemplated(Protocol_* iprot, Protocol_* oprot, const std::string& fname, int32_t seqid, void* callContext) {
-  LOG(INFO) << "Server dispatching call: " << fname << " seqid = " << seqid;
+  LOG(INFO) << "Server thread " << boost::this_thread::get_id() << " dispatching call: " << fname << " seqid = " << seqid;
   typename ProcessMap::iterator pfn;
   pfn = processMap_.find(fname);
   if (pfn == processMap_.end()) {

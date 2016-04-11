@@ -1,3 +1,6 @@
+/*
+ * To run: GLOG_logtostderr=1 ./client.bin
+ */
 #include <iostream>
 
 // MyFirstService header file
@@ -84,9 +87,9 @@ int main(int argc, char **argv)
 
         srand( time(0) );
         boost::thread_group thrgroup;
-        for( uint32_t i = 0; i < 10; ++i )
-            // thrgroup.create_thread( std::bind(test2, protocol) );
+        for( uint32_t i = 0; i < 1; ++i )
             thrgroup.create_thread( std::bind(test1, std::ref(client)) );
+            // thrgroup.create_thread( std::bind(test2, protocol) );
         thrgroup.join_all();
         cout << "Test finished!" << endl;
 
